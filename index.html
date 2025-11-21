@@ -39,52 +39,102 @@
 
 <body>
 
-    <div id="ui-container">
-        <button class="btn-cor" style="background-color: #FF0000;" onclick="mudarCor('#FF0000')"></button>
-        <button class="btn-cor" style="background-color: #0000FF;" onclick="mudarCor('#0000FF')"></button>
-        <button class="btn-cor" style="background-color: #00FF00;" onclick="mudarCor('#00FF00')"></button>
-    </div>
+    <!DOCTYPE html>
+    <html lang="pt-br">
 
-    <a-scene embedded arjs="sourceType: webcam;" renderer="colorManagement: true; physicallyCorrectLights: true;">
+    <head>
+        <meta charset="UTF-8">
+        <title>Portfólio WebAR - Personalizador de Produto</title>
+        <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
+        <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
 
-        <a-light type="ambient" color="#BBB"></a-light>
-        <a-light type="directional" intensity="0.8" position="-1 1 1"></a-light>
-
-        <a-marker preset="hiro">
-            <a-box id="produto-3d" position="0 0.5 0" material="color: #FFFFFF"
-                animation="property: rotation; to: 0 360 0; loop: true; dur: 10000; easing: linear"></a-box>
-        </a-marker>
-
-        <a-entity camera></a-entity>
-    </a-scene>
-
-    <script>
-        /*
-        Função para alterar a cor do objeto 3D.
-         */
-        function mudarCor(novaCor) {
-            const produto = document.querySelector('#produto-3d');
-
-            if (produto) {
-                // Se for uma primitiva (box, sphere), muda a cor direta:
-                produto.setAttribute('color', novaCor);
-
-                // PARA MODELOS 3D (GLB/GLTF):
-                // Modelos importados podem exigir a travessia da malha (mesh) para mudar a cor.
-                // O código abaixo é um exemplo para modelos complexos:
-                /*
-                const mesh = produto.getObject3D('mesh');
-                if (mesh) {
-                    mesh.traverse((node) => {
-                        if (node.isMesh) {
-                            node.material.color.set(novaCor);
-                        }
-                    });
-                }
-                */
+        <style>
+            body {
+                margin: 0;
+                overflow: hidden;
+                font-family: Arial, sans-serif;
             }
-        }
-    </script>
-</body>
 
-</html>
+            #ui-container {
+                position: fixed;
+                bottom: 20px;
+                left: 0;
+                width: 100%;
+                text-align: center;
+                z-index: 10;
+                display: flex;
+                justify-content: center;
+                gap: 15px;
+            }
+
+            .btn-cor {
+                width: 50px;
+                height: 50px;
+                border-radius: 50%;
+                border: 2px solid #fff;
+                cursor: pointer;
+                box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.5);
+            }
+        </style>
+    </head>
+
+    <body>
+
+        <div id="ui-container">
+            <button class="btn-cor" style="background-color: #FF0000;" onclick="mudarCor('#FF0000')"></button>
+            <button class="btn-cor" style="background-color: #0000FF;" onclick="mudarCor('#0000FF')"></button>
+            <button class="btn-cor" style="background-color: #00FF00;" onclick="mudarCor('#00FF00')"></button>
+        </div>
+
+        <a-assets>
+            <a-asset-item id="modelo-bola" src="./bola_volei_substance.glb"></a-asset-item>
+        </a-assets>
+
+        <a-scene embedded arjs="sourceType: webcam;" renderer="colorManagement: true; physicallyCorrectLights: true;">
+
+            <a-light type="ambient" color="#BBB"></a-light>
+            <a-light type="directional" intensity="0.8" position="-1 1 1"></a-light>
+
+            <a-marker preset="hiro">
+                <!-- Modelo 3D substituindo o Box -->
+                <a-entity id="produto-3d" gltf-model="#modelo-bola" position="0 0 0" scale="0.5 0.5 0.5"
+                    animation="property: rotation; to: 0 360 0; loop: true; dur: 10000; easing: linear">
+                </a-entity>
+            </a-marker>
+
+            <a-entity camera></a-entity>
+        </a-scene>
+
+        <script>
+            /*
+            Função para alterar a cor do objeto 3D.
+             */
+            function mudarCor(novaCor) {
+                const produto = document.querySelector('#produto-3d');
+
+                if (produto) {
+                    // PARA MODELOS 3D (GLB/GLTF):
+                    // É necessário acessar a malha (mesh) interna do modelo para alterar o material.
+                    const mesh = produto.getObject3D('mesh');
+
+                    if (mesh) {
+                        mesh.traverse((node) => {
+                            if (node.isMesh) {
+                                // Verifica se o material existe antes de tentar mudar a cor
+                                if (node.material) {
+                                    // Clona o material para não afetar outros objetos que usem o mesmo material (boa prática)
+                                    // node.material = node.material.clone(); 
+                                    // No caso simples, podemos mudar direto:
+                                    node.material.color.set(novaCor);
+                                }
+                            }
+                        });
+                    } else {
+                        console.warn('Mesh ainda não carregada ou não encontrada.');
+                    }
+                }
+            }
+        </script>
+    </body>
+
+    </html>
