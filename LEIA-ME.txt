@@ -1,0 +1,8 @@
+PROJETO: Personalizador de Produto WebAR
+DESENVOLVEDOR: Matheus Rodrigues
+
+CRÉDITOS DO MODELO 3D:
+Modelo: Bola Volei Substance
+Autor: Joao Freitas
+Fonte: Fonte: https://skfb.ly/o9MDE
+Licença: Licença: CC BY 4.0
