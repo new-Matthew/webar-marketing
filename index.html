@@ -13,7 +13,6 @@
             overflow: hidden;
         }
 
-        /* Container dos botões */
         #ui-container {
             position: fixed;
             bottom: 20px;
@@ -26,7 +25,6 @@
             gap: 15px;
         }
 
-        /* 2. Correção do CSS da classe .btn-cor */
         .btn-cor {
             width: 50px;
             height: 50px;
@@ -64,15 +62,13 @@
             const produto = document.querySelector('#produto-3d');
 
             if (produto) {
-                // Acessa a estrutura interna (mesh) do modelo GLB/GLTF
+
                 const mesh = produto.getObject3D('mesh');
 
                 if (mesh) {
                     mesh.traverse((node) => {
                         if (node.isMesh) {
-                            // Verifica se o material existe
                             if (node.material) {
-                                // Aplica a cor
                                 node.material.color.set(novaCor);
                             }
                         }
