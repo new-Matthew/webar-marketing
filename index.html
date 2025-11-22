@@ -3,12 +3,38 @@
 
 <head>
     <meta charset="UTF-8">
-    height: 50px;
-    border-radius: 50%;
-    border: 2px solid #fff;
-    cursor: pointer;
-    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.5);
-    }
+    <title>Personalizador AR</title>
+    <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+
+        /* Container dos botões */
+        #ui-container {
+            position: fixed;
+            bottom: 20px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            z-index: 10;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        /* 2. Correção do CSS da classe .btn-cor */
+        .btn-cor {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            cursor: pointer;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.5);
+        }
     </style>
 </head>
 
@@ -22,36 +48,41 @@
 
     <a-scene embedded arjs="sourceType: webcam;" renderer="colorManagement: true; physicallyCorrectLights: true;">
 
-        <a-assets>
-            /*
-            Função para alterar a cor do objeto 3D.
-            */
-            function mudarCor(novaCor) {
+        <a-light type="ambient" color="#BBB"></a-light>
+        <a-light type="directional" intensity="0.8" position="-1 1 1"></a-light>
+
+        <a-marker preset="hiro">
+            <a-entity id="produto-3d" gltf-model="url(bola_volei_substance.glb)" scale="0.5 0.5 0.5" position="0 0 0">
+            </a-entity>
+        </a-marker>
+
+        <a-entity camera></a-entity>
+    </a-scene>
+
+    <script>
+        function mudarCor(novaCor) {
             const produto = document.querySelector('#produto-3d');
 
             if (produto) {
-            // PARA MODELOS 3D (GLB/GLTF):
-            // É necessário acessar a malha (mesh) interna do modelo para alterar o material.
-            const mesh = produto.getObject3D('mesh');
+                // Acessa a estrutura interna (mesh) do modelo GLB/GLTF
+                const mesh = produto.getObject3D('mesh');
 
-            if (mesh) {
-            mesh.traverse((node) => {
-            if (node.isMesh) {
-            // Verifica se o material existe antes de tentar mudar a cor
-            if (node.material) {
-            // Clona o material para não afetar outros objetos que usem o mesmo material (boa prática)
-            // node.material = node.material.clone();
-            // No caso simples, podemos mudar direto:
-            node.material.color.set(novaCor);
+                if (mesh) {
+                    mesh.traverse((node) => {
+                        if (node.isMesh) {
+                            // Verifica se o material existe
+                            if (node.material) {
+                                // Aplica a cor
+                                node.material.color.set(novaCor);
+                            }
+                        }
+                    });
+                } else {
+                    console.warn('Modelo 3D ainda não carregou completamente.');
+                }
             }
-            }
-            });
-            } else {
-            console.warn('Mesh ainda não carregada ou não encontrada.');
-            }
-            }
-            }
-            </script>
+        }
+    </script>
 </body>
 
 </html>
